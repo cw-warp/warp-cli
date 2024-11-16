@@ -1,0 +1,48 @@
+[package]
+name = "cw-warp"
+description = "Scaffold, build, test, and deploy CosmWasm Smart Contracts faster than ever before"
+version = "0.4.0-dev"
+license = "MIT"
+edition = "2021"
+homepage = "https://cw-warp.github.io/"
+repository = "https://github.com/cw-warp/warp-cli"
+keywords = [
+    "archway",
+    "blockchain",
+    "productivity",
+    "smart-contracts",
+    "cosmwasm",
+]
+readme = "README.md"
+
+[profile.dev]
+opt-level = 3      # Optimize for size.
+lto = false        # Enable Link Time Optimization
+codegen-units = 24 # Reduce number of codegen units to increase optimizations.
+panic = "abort"    # Abort on panic
+strip = false      # Automatically strip symbols from the binary.
+
+
+[profile.release]
+opt-level = "z"   # Optimize for size.
+lto = true        # Enable Link Time Optimization
+codegen-units = 1 # Reduce number of codegen units to increase optimizations.
+panic = "abort"   # Abort on panic
+strip = true      # Automatically strip symbols from the binary.
+
+[profile.dependencies]
+regex = { opt-level = "z", lto = true, codegen-units = 1, strip = true }
+
+[dependencies]
+clap = { version = "4.5.20", features = ["derive"] }
+toml = "0.8.19"
+serde = { version = "1.0.213", default-features = false, features = ["derive"] }
+serde_json = "1.0.132"
+thiserror = "1.0.65"
+regex = { version = "1.11.1", use-default-features = false, features = ["std", "perf"] }
+rpassword = "7.3.1"
+owo-colors = "4.1.0"
+
+[[bin]]
+name = "warp"
+path = "src/main.rs"
