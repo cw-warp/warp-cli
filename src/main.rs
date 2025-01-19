@@ -60,6 +60,7 @@ fn main() -> Result<(), WarpError> {
             "scrt" => Box::new(chains::secret::SecretNetworkProfile) as Box<dyn ChainProfile>,
             "sei" => Box::new(chains::sei::SeiProfile) as Box<dyn ChainProfile>,
             "injective" => Box::new(chains::injective::InjectiveProfile) as Box<dyn ChainProfile>,
+            "juno" => Box::new(chains::juno::JunoProfile) as Box<dyn ChainProfile>,
             _ => panic!("Unknown profile"),
         })
     } else {

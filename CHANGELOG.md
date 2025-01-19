@@ -1,3 +1,12 @@
+# v0.4.0:
+
+- Added support for Juno Network
+- Moved the underlying GitHub Infrastructure to `cw-warp` organization
+- Changed how node images are handled per-chain
+- Added groundwork for ToolChains (modular, customizable pipelines)
+- Added new documentation
+
+
 # v0.3.0:
 
 - Added an abstraction layer for commands to implement different behavior for different chains

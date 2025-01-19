@@ -4,3 +4,4 @@ pub mod xion;
 pub mod secret;
 pub mod sei;
 pub mod injective;
+pub mod juno;

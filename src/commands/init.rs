@@ -23,6 +23,7 @@ pub enum ChainParam {
     Scrt,
     Sei,
     Injective,
+    Juno,
 }
 
 impl ChainParam {
@@ -33,6 +34,7 @@ impl ChainParam {
             ChainParam::Scrt => Box::new(crate::chains::secret::SecretNetworkProfile),
             ChainParam::Sei => Box::new(crate::chains::sei::SeiProfile),
             ChainParam::Injective => Box::new(crate::chains::injective::InjectiveProfile),
+            ChainParam::Juno => Box::new(crate::chains::juno::JunoProfile),
         }
     }
 }
