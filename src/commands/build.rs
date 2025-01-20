@@ -36,7 +36,7 @@ impl Executable for BuildCommand {
                 }
                 _ => {
                     rename_files = false;
-                    format!("docker run --rm -v {0}:/code --mount type=volume,source={1}_cache,target=/code/target --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry cosmwasm/workspace-optimizer:0.12.10", 
+                    format!("docker run --rm -v {0}:/code --mount type=volume,source={1}_cache,target=/code/target --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry cosmwasm/optimizer:0.16.0", 
                     &project_root.to_str().unwrap(),
                     &project_root.to_str().unwrap().rsplit("/").next().unwrap())
                 }
