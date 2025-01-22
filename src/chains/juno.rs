@@ -396,7 +396,8 @@ impl ChainProfile for JunoProfile {
         std::fs::write(msg_path, crate::consts::MSG_FILE)?;
         std::fs::write(mod_path, "pub mod msg;")?;
         let lib_path = shared_path.clone().join("src").join("lib.rs");
-        let mut lib_file = File::options().write(true).append(true).open(lib_path)?;
+        let mut lib_file = File::options().write(true).append(true).open(&lib_path)?;
+        println!("Shared Lib: {}", &lib_path.to_str().unwrap());
         writeln!(&mut lib_file, "pub mod {};", &contract_name)?;
         println!("[2/2] Building the workspace...");
         std::process::Command::new("cargo")
@@ -442,11 +443,12 @@ impl ChainProfile for JunoProfile {
     }
 
     fn get_initialized_address(&self, tx: &TxQueryResponse) -> String {
+        
         tx.logs
             .first()
             .unwrap()
             .events
-            .get(1)
+            .get(0)
             .unwrap()
             .attributes
             .get(0)

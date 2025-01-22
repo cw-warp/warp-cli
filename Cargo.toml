@@ -1,7 +1,7 @@
 [package]
 name = "cw-warp"
 description = "Scaffold, build, test, and deploy CosmWasm Smart Contracts faster than ever before"
-version = "0.4.0-rc.2"
+version = "0.4.0"
 license = "MIT"
 edition = "2021"
 homepage = "https://cw-warp.github.io/"
