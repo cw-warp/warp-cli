@@ -12,11 +12,15 @@ RUN apt update -y && apt upgrade -y && apt install -y pkg-config build-essential
 
 # Add Golang
 RUN wget https://go.dev/dl/go1.24.2.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.2.linux-amd64.tar.gz 
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.2.linux-amd64.tar.gz
+RUN rm go1.24.2.linux-amd64.tar.gz
 ENV PATH=$PATH:/usr/local/go/bin
 RUN go version
 
 RUN cargo install cw-warp
 
-WORKDIR /projects
-CMD [ "/bin/bash" ]
+WORKDIR /root/projects
+
+
+RUN rm -rf /root/.cargo/registry
+CMD [ "tail", "-f", "/dev/null" ]
