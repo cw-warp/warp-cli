@@ -15,11 +15,16 @@ RUN git clone https://github.com/sei-protocol/sei-chain sei
 RUN cd sei && make build
 RUN pwd && ls sei/build
 
+# Junod
+RUN git clone https://github.com/CosmosContracts/juno
+RUN cd juno && git fetch && git checkout v9.0.0 && make build
+
 FROM rust:slim@sha256:3f391b0678a6e0c88fd26f13e399c9c515ac47354e3cadfee7daee3b21651a4f
 COPY --from=go_builder /go/libwasmvm.x86_64.so /usr/lib/libwasmvm.x86_64.so
 COPY --from=go_builder /go/injectived /usr/local/bin/injectived
 COPY --from=go_builder /go/peggo /usr/local/bin/peggo
 COPY --from=go_builder /go/sei/build/seid /usr/local/bin/seid
+COPY --from=go_builder /go/juno/build/junod /usr/local/bin/junod
 
 WORKDIR /setup
 
