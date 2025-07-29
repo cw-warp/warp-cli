@@ -10,7 +10,9 @@ pub enum WarpError {
     TomlSerializationError(#[from] toml::ser::Error),
     #[error("Toml Deserialization Error: {0:?}")]
     TomlDeserializationError(#[from] toml::de::Error),
-    #[error("Project file can't be found. You have to navigate to a valid Warp project directory.")]
+    #[error(
+        "Project file can't be found. You have to navigate to a valid Warp project directory."
+    )]
     ProjectFileNotFound,
     #[error("Another Warp project already exists at '{0}'.")]
     ProjectFileAlreadyExists(PathBuf),
@@ -34,4 +36,6 @@ pub enum WarpError {
     UnderlyingCliError(String),
     #[error("Can't match the following ID: '{0}'")]
     ContractIdNotFound(String),
+    #[error("Schema generation failed for contract '{0}': {1}")]
+    SchemaGenerationFailed(String, String),
 }
