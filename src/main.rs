@@ -1,3 +1,4 @@
+pub mod chain_specific;
 pub mod chains;
 mod commands;
 mod consts;
@@ -5,7 +6,6 @@ pub mod cosmos;
 mod error;
 mod executable;
 mod utils;
-pub mod chain_specific;
 
 use chains::{archway::ArchwayProfile, chain_profile::ChainProfile};
 use clap::{command, Parser, Subcommand};
@@ -17,6 +17,8 @@ use commands::{
 use error::WarpError;
 use executable::Executable;
 use owo_colors::OwoColorize;
+
+use crate::commands::schema::SchemaCommand;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -34,6 +36,8 @@ enum Commands {
     Config(ConfigCommand),
     /// Build the current workspace
     Build(BuildCommand),
+    /// Generate the schema for the current workspace
+    Schema(SchemaCommand),
     /// Execute the 'Auto Deploy' script for the workspace (see Warp.toml)
     Deploy(AutoDeployCommand),
     /// Initialize the frontend for the current workspace
@@ -87,6 +91,7 @@ fn main() -> Result<(), WarpError> {
         ),
         Commands::New(x) => x.execute(project_root, config, &profile.unwrap()),
         Commands::Build(x) => x.execute(project_root, config, &profile.unwrap()),
+        Commands::Schema(x) => x.execute(project_root, config, &profile.unwrap()),
         Commands::Test(x) => x.execute(project_root, config, &profile.unwrap()),
         Commands::Node(x) => x.execute(project_root, config, &profile.unwrap()),
         Commands::Config(x) => x.execute(project_root, config, &profile.unwrap()),
