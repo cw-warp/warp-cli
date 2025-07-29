@@ -7,5 +7,6 @@ pub mod autodeploy;
 pub mod config;
 pub mod wasm;
 pub mod frontend;
+pub mod schema;
 
 pub use build::*;
