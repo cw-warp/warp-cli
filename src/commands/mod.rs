@@ -8,5 +8,6 @@ pub mod config;
 pub mod wasm;
 pub mod frontend;
 pub mod schema;
+pub mod docgen;
 
 pub use build::*;

@@ -10,7 +10,7 @@ use std::path::PathBuf;
 pub struct FrontendCommand {}
 
 impl Executable for FrontendCommand {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<PathBuf>,
         config: Option<ProjectConfig>,

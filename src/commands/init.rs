@@ -40,7 +40,7 @@ impl ChainParam {
 }
 
 impl Executable for InitCommand {
-    fn execute(
+    async fn execute(
         &self,
         _project_root: Option<PathBuf>,
         _config: Option<ProjectConfig>,

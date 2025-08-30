@@ -3,7 +3,7 @@ use crate::{
 };
 
 pub trait Executable {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<std::path::PathBuf>,
         config: Option<ProjectConfig>,

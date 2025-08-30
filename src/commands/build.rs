@@ -15,7 +15,7 @@ pub struct BuildCommand {
 }
 
 impl Executable for BuildCommand {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<PathBuf>,
         config: Option<ProjectConfig>,
