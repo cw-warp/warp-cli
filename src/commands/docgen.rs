@@ -3,7 +3,11 @@ use cw_swaggy::executable::{Executable as SwaggyExecutable, ExecutionContext};
 
 
 #[derive(clap::Args, Debug, Clone, PartialEq, Eq)]
-pub struct DocgenCommand {}
+pub struct DocgenCommand {
+    /// Do not serve the generated documentation
+    #[clap(long, default_value_t = false)]
+    pub no_serve: bool,
+}
 
 impl Executable for DocgenCommand {
     async fn execute(
@@ -32,6 +36,9 @@ impl Executable for DocgenCommand {
             .map_err(|e| crate::error::WarpError::DocgenError(e.to_string()))?;
         
         // 3. Docgen execution - serve
+        if self.no_serve {
+            return Ok(());
+        }
         cw_swaggy::commands::serve::ServeCmd {
             schema: root_path.join("openapi.json"),
             port: 8008,
