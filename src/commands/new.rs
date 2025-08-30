@@ -20,7 +20,7 @@ pub struct NewCommand {
 }
 
 impl Executable for NewCommand {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<PathBuf>,
         config: Option<ProjectConfig>,

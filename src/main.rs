@@ -18,7 +18,7 @@ use error::WarpError;
 use executable::Executable;
 use owo_colors::OwoColorize;
 
-use crate::commands::schema::SchemaCommand;
+use crate::commands::{docgen::DocgenCommand, schema::SchemaCommand};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -38,6 +38,8 @@ enum Commands {
     Build(BuildCommand),
     /// Generate the schema for the current workspace
     Schema(SchemaCommand),
+    /// Generate documentation for the current forkspace
+    Docgen(DocgenCommand),
     /// Execute the 'Auto Deploy' script for the workspace (see Warp.toml)
     Deploy(AutoDeployCommand),
     /// Initialize the frontend for the current workspace
@@ -52,7 +54,8 @@ enum Commands {
     Wasm(WasmCommand),
 }
 
-fn main() -> Result<(), WarpError> {
+#[tokio::main]
+async fn main() -> Result<(), WarpError> {
     let cli = Cli::parse();
 
     let (project_root, config) = utils::project_config::ProjectConfig::parse_project_config()
@@ -83,20 +86,21 @@ fn main() -> Result<(), WarpError> {
     // You can check for the existence of subcommands, and if found use their
     // matches just as you would the top level cmd
     let result = match &cli.command {
-        Commands::Deploy(x) => x.execute(project_root, config, &profile.unwrap()),
+        Commands::Deploy(x) => x.execute(project_root, config, &profile.unwrap()).await,
         Commands::Init(x) => x.execute(
             project_root,
             config,
             &profile.unwrap_or(Box::new(ArchwayProfile) as Box<dyn ChainProfile>),
-        ),
-        Commands::New(x) => x.execute(project_root, config, &profile.unwrap()),
-        Commands::Build(x) => x.execute(project_root, config, &profile.unwrap()),
-        Commands::Schema(x) => x.execute(project_root, config, &profile.unwrap()),
-        Commands::Test(x) => x.execute(project_root, config, &profile.unwrap()),
-        Commands::Node(x) => x.execute(project_root, config, &profile.unwrap()),
-        Commands::Config(x) => x.execute(project_root, config, &profile.unwrap()),
-        Commands::Wasm(x) => x.execute(project_root, config, &profile.unwrap()),
-        Commands::Frontend(x) => x.execute(project_root, config, &profile.unwrap()),
+        ).await,
+        Commands::New(x) => x.execute(project_root, config, &profile.unwrap()).await,
+        Commands::Build(x) => x.execute(project_root, config, &profile.unwrap()).await,
+        Commands::Schema(x) => x.execute(project_root, config, &profile.unwrap()).await,
+        Commands::Docgen(x) => x.execute(project_root, config, &profile.unwrap()).await,
+        Commands::Test(x) => x.execute(project_root, config, &profile.unwrap()).await,
+        Commands::Node(x) => x.execute(project_root, config, &profile.unwrap()).await,
+        Commands::Config(x) => x.execute(project_root, config, &profile.unwrap()).await,
+        Commands::Wasm(x) => x.execute(project_root, config, &profile.unwrap()).await,
+        Commands::Frontend(x) => x.execute(project_root, config, &profile.unwrap()).await,
     };
     if let Err(x) = result {
         println!("{} {}", "Error!".red(), x.to_string().bright_red());

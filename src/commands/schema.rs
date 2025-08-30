@@ -12,7 +12,7 @@ use crate::{
 pub struct SchemaCommand {}
 
 impl Executable for SchemaCommand {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<PathBuf>,
         _config: Option<ProjectConfig>,

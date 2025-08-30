@@ -54,7 +54,7 @@ pub enum NetworkConfig {
 }
 
 impl Executable for ConfigCommand {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<PathBuf>,
         config: Option<ProjectConfig>,

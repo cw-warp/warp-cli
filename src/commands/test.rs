@@ -20,7 +20,7 @@ pub struct TestCommand {
 }
 
 impl Executable for TestCommand {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<PathBuf>,
         config: Option<ProjectConfig>,
@@ -35,7 +35,7 @@ impl Executable for TestCommand {
         // 1. Build the code if requested
         if self.rebuild {
             let cmd = BuildCommand { optimized: true };
-            cmd.execute(Some(project_root.clone()), Some(config.clone()), profile)?;
+            cmd.execute(Some(project_root.clone()), Some(config.clone()), profile).await?;
         }
 
         // 2. Set up the node unless specified otherwise
@@ -46,7 +46,7 @@ impl Executable for TestCommand {
                 container: Some(config.tests.test_container_name.clone()),
                 persistant: config.tests.persist_image,
             };
-            let status = cmd.execute(Some(project_root.clone()), Some(config.clone()), profile);
+            let status = cmd.execute(Some(project_root.clone()), Some(config.clone()), profile).await;
             let is_conflict = match status {
                 Ok(_) => false,
                 Err(x) => {

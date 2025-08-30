@@ -17,7 +17,7 @@ pub struct NodeCommand {
 }
 
 impl Executable for NodeCommand {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<PathBuf>,
         config: Option<ProjectConfig>,

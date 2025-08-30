@@ -21,7 +21,7 @@ pub struct AutoDeployCommand {
 }
 
 impl Executable for AutoDeployCommand {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<PathBuf>,
         config: Option<ProjectConfig>,
@@ -56,7 +56,7 @@ impl Executable for AutoDeployCommand {
                 Some(project_root),
                 Some(config.clone()),
                 profile,
-            )?;
+            ).await?;
         }
 
         let deployment_account = profile

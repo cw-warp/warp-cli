@@ -52,7 +52,7 @@ pub struct WasmQueryArgs {
 }
 
 impl Executable for WasmCommand {
-    fn execute(
+    async fn execute(
         &self,
         project_root: Option<PathBuf>,
         config: Option<ProjectConfig>,
