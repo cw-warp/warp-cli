@@ -6,6 +6,9 @@ pub mod cosmos;
 mod error;
 mod executable;
 mod utils;
+pub mod toolchains;
+
+use std::path::PathBuf;
 
 use chains::{archway::ArchwayProfile, chain_profile::ChainProfile};
 use clap::{command, Parser, Subcommand};
@@ -26,6 +29,8 @@ use crate::commands::schema::SchemaCommand;
 struct Cli {
     #[command(subcommand)]
     command: Commands,
+    #[arg(long, global = true)]
+    pub pipeline: Option<PathBuf>,
 }
 
 #[derive(Subcommand)]
@@ -67,6 +72,11 @@ fn main() -> Result<(), WarpError> {
             "juno" => Box::new(chains::juno::JunoProfile) as Box<dyn ChainProfile>,
             _ => panic!("Unknown profile"),
         })
+    } else if let Some(pipeline_path) = &cli.pipeline {
+        let pipeline = toml::from_str(&std::fs::read_to_string(pipeline_path)?)?;
+        Some(Box::new(crate::chains::custom_pipeline::CustomPipelineProfile::new(
+            pipeline,
+        )) as Box<dyn ChainProfile>)
     } else {
         None
     };
@@ -103,3 +113,4 @@ fn main() -> Result<(), WarpError> {
     }
     Ok(())
 }
+``
