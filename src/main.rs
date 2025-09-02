@@ -21,7 +21,7 @@ use error::WarpError;
 use executable::Executable;
 use owo_colors::OwoColorize;
 
-use crate::commands::{pipeline::PipelineCommand, schema::SchemaCommand};
+use crate::{commands::{pipeline::PipelineCommand, schema::SchemaCommand}, toolchains::pipeline::Pipeline};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -68,7 +68,14 @@ fn main() -> Result<(), WarpError> {
 
     let (project_root, config) = utils::project_config::ProjectConfig::parse_project_config()
         .map_or((None, None), |x| (Some(x.0), Some(x.1)));
-    let profile = if config.is_some() {
+    let profile = if let Some(pipeline_path) = &cli.pipeline {
+        let pipeline: Pipeline = toml::from_str(&std::fs::read_to_string(pipeline_path)?)?;
+        println!("{} {}", "> Using custom pipeline:".blue(), pipeline.clone().name.bright_blue());
+        Some(Box::new(crate::chains::custom_pipeline::CustomPipelineProfile::new(
+            pipeline,
+        )) as Box<dyn ChainProfile>)
+    }
+    else if config.is_some() {
         Some(match config.as_ref().unwrap().network.profile.as_str() {
             "archway" => Box::new(ArchwayProfile) as Box<dyn ChainProfile>,
             "xion" => Box::new(chains::xion::XionProfile) as Box<dyn ChainProfile>,
@@ -78,12 +85,7 @@ fn main() -> Result<(), WarpError> {
             "juno" => Box::new(chains::juno::JunoProfile) as Box<dyn ChainProfile>,
             _ => panic!("Unknown profile"),
         })
-    } else if let Some(pipeline_path) = &cli.pipeline {
-        let pipeline = toml::from_str(&std::fs::read_to_string(pipeline_path)?)?;
-        Some(Box::new(crate::chains::custom_pipeline::CustomPipelineProfile::new(
-            pipeline,
-        )) as Box<dyn ChainProfile>)
-    } else {
+    }  else {
         None
     };
 
