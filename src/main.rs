@@ -6,6 +6,9 @@ pub mod cosmos;
 mod error;
 mod executable;
 mod utils;
+pub mod toolchains;
+
+use std::path::PathBuf;
 
 use chains::{archway::ArchwayProfile, chain_profile::ChainProfile};
 use clap::{command, Parser, Subcommand};
@@ -18,7 +21,7 @@ use error::WarpError;
 use executable::Executable;
 use owo_colors::OwoColorize;
 
-use crate::commands::schema::SchemaCommand;
+use crate::{commands::{pipeline::PipelineCommand, schema::SchemaCommand}, toolchains::pipeline::Pipeline};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -26,6 +29,8 @@ use crate::commands::schema::SchemaCommand;
 struct Cli {
     #[command(subcommand)]
     command: Commands,
+    #[arg(long, global = true)]
+    pub pipeline: Option<PathBuf>,
 }
 
 #[derive(Subcommand)]
@@ -50,6 +55,12 @@ enum Commands {
     Test(TestCommand),
     /// Wasm commands for interacting with deployed contracts
     Wasm(WasmCommand),
+    /// Pipeline related commands
+    Pipeline {
+        #[command(subcommand)]
+        command: PipelineCommand
+    },
+
 }
 
 fn main() -> Result<(), WarpError> {
@@ -57,7 +68,14 @@ fn main() -> Result<(), WarpError> {
 
     let (project_root, config) = utils::project_config::ProjectConfig::parse_project_config()
         .map_or((None, None), |x| (Some(x.0), Some(x.1)));
-    let profile = if config.is_some() {
+    let profile = if let Some(pipeline_path) = &cli.pipeline {
+        let pipeline: Pipeline = toml::from_str(&std::fs::read_to_string(pipeline_path)?)?;
+        println!("{} {}", "> Using custom pipeline:".blue(), pipeline.clone().name.bright_blue());
+        Some(Box::new(crate::chains::custom_pipeline::CustomPipelineProfile::new(
+            pipeline,
+        )) as Box<dyn ChainProfile>)
+    }
+    else if config.is_some() {
         Some(match config.as_ref().unwrap().network.profile.as_str() {
             "archway" => Box::new(ArchwayProfile) as Box<dyn ChainProfile>,
             "xion" => Box::new(chains::xion::XionProfile) as Box<dyn ChainProfile>,
@@ -67,12 +85,13 @@ fn main() -> Result<(), WarpError> {
             "juno" => Box::new(chains::juno::JunoProfile) as Box<dyn ChainProfile>,
             _ => panic!("Unknown profile"),
         })
-    } else {
+    }  else {
         None
     };
 
     match &cli.command {
         Commands::Init(_) => (),
+        Commands::Pipeline { command: _ } => (),
         _ => {
             if profile.is_none() {
                 return Err(WarpError::ProjectFileNotFound);
@@ -97,6 +116,7 @@ fn main() -> Result<(), WarpError> {
         Commands::Config(x) => x.execute(project_root, config, &profile.unwrap()),
         Commands::Wasm(x) => x.execute(project_root, config, &profile.unwrap()),
         Commands::Frontend(x) => x.execute(project_root, config, &profile.unwrap()),
+        Commands::Pipeline { command} => command.execute(project_root, config, &profile.unwrap_or(Box::new(ArchwayProfile) as Box<dyn ChainProfile>)),
     };
     if let Err(x) = result {
         println!("{} {}", "Error!".red(), x.to_string().bright_red());
