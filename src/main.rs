@@ -21,7 +21,7 @@ use error::WarpError;
 use executable::Executable;
 use owo_colors::OwoColorize;
 
-use crate::commands::schema::SchemaCommand;
+use crate::commands::{pipeline::PipelineCommand, schema::SchemaCommand};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -55,6 +55,12 @@ enum Commands {
     Test(TestCommand),
     /// Wasm commands for interacting with deployed contracts
     Wasm(WasmCommand),
+    /// Pipeline related commands
+    Pipeline {
+        #[command(subcommand)]
+        command: PipelineCommand
+    },
+
 }
 
 fn main() -> Result<(), WarpError> {
@@ -83,6 +89,7 @@ fn main() -> Result<(), WarpError> {
 
     match &cli.command {
         Commands::Init(_) => (),
+        Commands::Pipeline { command: _ } => (),
         _ => {
             if profile.is_none() {
                 return Err(WarpError::ProjectFileNotFound);
@@ -107,10 +114,10 @@ fn main() -> Result<(), WarpError> {
         Commands::Config(x) => x.execute(project_root, config, &profile.unwrap()),
         Commands::Wasm(x) => x.execute(project_root, config, &profile.unwrap()),
         Commands::Frontend(x) => x.execute(project_root, config, &profile.unwrap()),
+        Commands::Pipeline { command} => command.execute(project_root, config, &profile.unwrap_or(Box::new(ArchwayProfile) as Box<dyn ChainProfile>)),
     };
     if let Err(x) = result {
         println!("{} {}", "Error!".red(), x.to_string().bright_red());
     }
     Ok(())
 }
-``
