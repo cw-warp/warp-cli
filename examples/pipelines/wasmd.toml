@@ -1,0 +1,9 @@
+name = "wasmd"
+
+[config]
+cli_executable = "wasmd"
+cli_contract_subcommand = "wasm"
+cli_args = "--output json"
+cli_args_tx = "--gas  150000"
+cli_args_network = "--yes --chain-id wasmd-1"
+cli_args_store = ""

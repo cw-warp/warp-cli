@@ -38,4 +38,6 @@ pub enum WarpError {
     ContractIdNotFound(String),
     #[error("Schema generation failed for contract '{0}': {1}")]
     SchemaGenerationFailed(String, String),
+    #[error("Pipeline Load Error: {0}")]
+    PipelineLoadError(String),
 }
